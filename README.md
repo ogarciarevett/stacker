@@ -1,6 +1,8 @@
 <div align="center">
 
-# 🥞 stacker
+<img src="assets/stacker.svg" width="180" alt="stacker — a stack of pancakes with a terminal-cursor pat of butter">
+
+# stacker
 
 **Stack your agent skills instead of picking one.**
 
@@ -205,6 +207,8 @@ entries** — one skill loads, every source stays updatable and reachable.
 stacker/
 ├── README.md
 ├── LICENSE
+├── assets/
+│   └── stacker.svg         # the pancake logo (drawn by Codex, reviewed by Claude)
 ├── evals/
 │   ├── README.md
 │   ├── run.sh              # deterministic eval suite (sandboxed)

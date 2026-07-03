@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">stacker logo</title>
+  <desc id="desc">Three outlined pancakes on a plate with syrup and terminal-cursor-shaped butter.</desc>
+  <g stroke="#1F2430" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+    <ellipse cx="256" cy="382" rx="184" ry="55" fill="#E5E7EB"/>
+    <ellipse cx="256" cy="377" rx="132" ry="28" fill="#F8FAFC" stroke-width="9"/>
+
+    <path d="M97 323c0-30 30-50 75-45 18-17 55-16 77 1 26-18 70-13 88 10 45-1 78 19 77 50-1 36-45 55-158 55-112 0-159-25-159-71z" fill="#C97B2D"/>
+    <path d="M137 346c44 17 194 17 238-1" fill="none" stroke="#9E5C25" stroke-width="9" opacity=".8"/>
+
+    <path d="M113 272c0-29 29-48 72-43 17-17 52-17 74 0 25-17 67-12 85 9 40 0 69 18 68 47-1 34-42 52-153 52-105 0-146-24-146-65z" fill="#E8A33D"/>
+    <path d="M149 293c40 14 178 16 225 0" fill="none" stroke="#C97B2D" stroke-width="8" opacity=".75"/>
+
+    <path d="M133 219c-1-30 28-49 68-45 16-18 50-19 73-3 25-18 64-12 82 8 33 1 58 19 57 46-1 33-38 50-143 50-99 0-136-22-137-56z" fill="#E8A33D"/>
+    <path d="M170 238c34 13 141 14 207-1" fill="none" stroke="#C97B2D" stroke-width="8" opacity=".75"/>
+
+    <path d="M249 209c35-5 76 2 90 21 12 16 0 32-22 31-16 0-19 9-17 24l5 46c2 19-20 29-32 14-9-11-4-31-7-49-3-20-17-25-32-22-30 7-54-5-53-27 1-20 29-33 68-38z" fill="#7A3F18"/>
+
+    <g transform="rotate(-7 260 183)">
+      <rect x="219" y="155" width="86" height="62" rx="11" fill="#FFE08A"/>
+      <path d="M235 185l13 12-13 12" fill="none" stroke-width="7"/>
+      <rect x="259" y="193" width="22" height="12" rx="3" fill="#1F2430" stroke="none"/>
+      <path d="M236 170h48" stroke="#FFF1B8" stroke-width="7"/>
+    </g>
+  </g>
+</svg>
