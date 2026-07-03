@@ -6,7 +6,7 @@
 
 [![Agent Skill](https://img.shields.io/badge/agent-skill-8A2BE2)](https://agentskills.io)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Evals](https://img.shields.io/badge/evals-12%2F12_passing-brightgreen)](evals/)
+[![Evals](https://img.shields.io/badge/evals-18%2F18_passing-brightgreen)](evals/)
 [![No re-pull](https://img.shields.io/badge/updates-symlinked,_no_re--pull-blue)](#persisting-a-stack--stacksh)
 
 Works with **Claude Code** · **Codex** · **Gemini CLI** · **opencode** · **Cursor**
@@ -192,7 +192,7 @@ Prove it, don't vibe it — deterministic suite (sandboxed, no API keys) plus on
 LLM-judged case. See [`evals/`](evals/):
 
 ```bash
-bash evals/run.sh   # 12 assertions: footprint, loading, updates, restore, agent-managed
+bash evals/run.sh   # 18 assertions: footprint, loading, updates, restore, agent-managed, hardening
 ```
 
 Real-world run (2026-07-03): stacking `web-access` over 9 sources (firecrawl +

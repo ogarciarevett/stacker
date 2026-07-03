@@ -23,7 +23,18 @@ echo "# epsilon" >"$sb/plugins/epsilon/SKILL.md"
 echo "# claude-in-chrome" >"$sb/plugins/claude-in-chrome/SKILL.md"
 ln -s "$sb/plugins/epsilon" "$sb/agent/epsilon"
 
-export STACKER_AGENT_DIRS="$sb/agent"
+# hardening fixtures: a dangling symlink, regex-metachar names, and the same
+# real dir in a second discovery dir
+ln -s "$sb/canonical/ghost" "$sb/agent/zeta"
+for n in aXb a.b; do
+  mkdir -p "$sb/canonical/$n"; echo "# $n" >"$sb/canonical/$n/SKILL.md"
+  ln -s "$sb/canonical/$n" "$sb/agent/$n"
+done
+mkdir -p "$sb/agent/dup" "$sb/agent2/dup"
+echo "# dup one" >"$sb/agent/dup/SKILL.md"
+echo "# dup two" >"$sb/agent2/dup/SKILL.md"
+
+export STACKER_AGENT_DIRS="$sb/agent:$sb/agent2"
 export STACKER_PROTECTED="$sb/plugins"
 pass=0; fail=0
 check() {
@@ -31,7 +42,14 @@ check() {
   else echo "FAIL  $1"; fail=$((fail + 1)); fi
 }
 
-bash "$stack" stash --into "$sb/stacked" alpha beta delta epsilon claude-in-chrome >/dev/null
+bash "$stack" stash --into "$sb/stacked" zeta alpha beta delta epsilon claude-in-chrome dup aXb a.b >/dev/null 2>&1
+
+# case: hardening — bad inputs neither abort the batch nor corrupt anything
+check "hardening: dangling symlink skipped, batch continued" '[ -L "$sb/agent/zeta" ] && [ -e "$sb/stacked/sources/alpha" ]'
+check "hardening: metachar names match exactly (a.b vs aXb)"  '[ -e "$sb/stacked/sources/a.b" ] && [ -e "$sb/stacked/sources/aXb" ]'
+check "hardening: dup in 2nd discovery dir left, no nesting" '[ -d "$sb/agent2/dup" ] && [ ! -e "$sb/stacked/sources/dup/dup" ]'
+check "hardening: path-traversal name rejected"              '! bash "$stack" stash --into "$sb/stacked" "../evil" 2>/dev/null'
+check "hardening: restoring an unknown name warns"           'bash "$stack" restore --from "$sb/stacked" nope 2>&1 | grep -q "not in the manifest"'
 
 # case: agent-managed — host-agent skills are detected and never moved
 check "agent-managed: epsilon (linked to plugin root) kept"  '[ -L "$sb/agent/epsilon" ] && [ -f "$sb/plugins/epsilon/SKILL.md" ]'
@@ -51,8 +69,14 @@ check "skill-loading: delta moved, not deleted"          'grep -q delta "$sb/sta
 echo "# alpha v2" >"$sb/canonical/alpha/SKILL.md"
 check "update-propagation: canonical v2 visible in stack" 'grep -q v2 "$sb/stacked/sources/alpha/SKILL.md"'
 
+# case: hardening — restore onto a recreated destination must not nest
+mkdir -p "$sb/agent/alpha"; echo "# reinstalled" >"$sb/agent/alpha/SKILL.md"
+bash "$stack" restore --from "$sb/stacked" alpha >/dev/null 2>&1
+check "hardening: blocked restore keeps row, no alpha/alpha" '[ ! -e "$sb/agent/alpha/alpha" ] && grep -q "^alpha" "$sb/stacked/sources/.manifest.tsv"'
+rm -rf "$sb/agent/alpha"
+
 # case: restore-roundtrip — exact undo
-bash "$stack" restore --from "$sb/stacked" >/dev/null
+bash "$stack" restore --from "$sb/stacked" >/dev/null 2>&1
 check "restore: alpha symlink back in discovery"         '[ -L "$sb/agent/alpha" ] && grep -q v2 "$sb/agent/alpha/SKILL.md"'
 check "restore: delta back as a real dir"                '[ -d "$sb/agent/delta" ] && [ ! -L "$sb/agent/delta" ]'
 check "restore: manifest empty"                          '[ ! -s "$sb/stacked/sources/.manifest.tsv" ]'
