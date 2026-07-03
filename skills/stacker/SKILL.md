@@ -1,6 +1,6 @@
 ---
 name: stacker
-description: Stack overlapping skills instead of picking one. When two or more installed skills or tools can do the same job (web scraping, search, code review, test generation, data extraction), run the best candidates in parallel on the same task, score their outputs, and merge them into one result that beats any single tool. Use when the user says "stack", "combine skills", "use every tool", "ensemble", "cross-check", "double-check with another tool", when a task is output-critical and multiple capable skills are installed, or when evals show no single tool wins on every axis. Do NOT use for routine tasks where one tool is clearly sufficient — route to that tool instead.
+description: Stack overlapping skills instead of picking one. When two or more installed skills or tools can do the same job (web scraping, search, code review, test generation, data extraction), run the best candidates in parallel on the same task, score their outputs, and merge them into one result that beats any single tool. Use when the user says "stack", "combine skills", "use every tool", "ensemble", "cross-check", "double-check with another tool", when a task is output-critical and multiple capable skills are installed, or when evals show no single tool wins on every axis. Also use when the user wants to stop overlapping skills from loading into context ("stash", "unload", "stop loading these skills") — scripts/stack.sh unloads them behind one stacked skill without deleting them. Do NOT use for routine tasks where one tool is clearly sufficient — route to that tool instead.
 ---
 
 # stacker
@@ -114,6 +114,78 @@ one context. So:
 - The main context holds: the task spec, the candidate list, the scores, the
   merged result. That's it.
 - 2–4 candidates max. A 6-tool stack is context bloat wearing a costume.
+
+## Persisting a stack — `scripts/stack.sh`
+
+A stack you build more than twice deserves to become a skill of its own: ONE
+stacked skill that owns the routing, with the source skills unloaded from the
+agent's discovery path so they stop costing context every session.
+`scripts/stack.sh` does the mechanical half:
+
+```bash
+# unload sources from the discovery path, re-link them under the stacked skill
+bash scripts/stack.sh stash --into ~/.agents/skills/web-access \
+  firecrawl firecrawl-scrape firecrawl-search agent-browser
+
+bash scripts/stack.sh status  --from ~/.agents/skills/web-access
+bash scripts/stack.sh restore --from ~/.agents/skills/web-access firecrawl  # or no names = all
+```
+
+**Nothing is deleted:**
+
+- A discovery entry that is a **symlink** (the skills-CLI norm) is unlinked; the
+  canonical dir (e.g. `~/.agents/skills/<name>`) stays put and keeps receiving
+  upstream updates. The stacked skill reaches it via a new symlink at
+  `sources/<name>` — updates flow through the link, no re-pull, no vendoring.
+- A **real directory** is moved (not copied) to `sources/<name>`.
+- `sources/.manifest.tsv` records every action, so `restore` is an exact undo.
+
+**Agent-managed skills are NEVER touched.** Skills that ship with the host
+agent — Claude Code plugin skills (`claude-in-chrome`), Gemini CLI extensions,
+Cursor extensions, opencode plugins, Codex installs — belong to that agent's
+own installation. `stash` detects which agents are present (binary on PATH or
+config root on disk) and refuses to move anything inside their roots, whatever
+CLI is running the stack. Those still belong in the stacked skill's **Routing
+table** as rows — they cost no discovery entry, so there is nothing to stash.
+Extend the protected list with `STACKER_PROTECTED=dir1:dir2`.
+
+**Updating a stack** needs no command: sources update through their symlinks
+the moment upstream does (`npx skills update`, `git pull`). To audit or grow a
+stack:
+
+```bash
+bash scripts/stack.sh doctor --from <stacked-dir>   # detected agents, broken links, upstream freshness
+bash scripts/stack.sh stash  --into <stacked-dir> <new-source>   # idempotent — re-run to add sources
+```
+
+Discovery paths default to `~/.claude/skills`; override with
+`STACKER_AGENT_DIRS=dir1:dir2`.
+
+## What a generated stacked skill MUST declare
+
+After stashing, the stacked skill is the only one the agent loads — so it must
+carry what the stashed skills used to announce:
+
+1. **Routing** — a decision table mapping task → source tool, plus the
+   escalation path. This is what replaces "load them all".
+2. **Sources** — where every candidate came from and how it stays fresh:
+
+```md
+## Sources (stacked by stacker)
+
+Unloaded from the discovery path; reachable via `sources/` symlinks.
+Upstream updates flow through the links — no re-pull.
+
+| source | reachable at | canonical |
+|---|---|---|
+| firecrawl     | sources/firecrawl     | ~/.agents/skills/firecrawl |
+| agent-browser | sources/agent-browser | ~/.agents/skills/agent-browser |
+
+Restore any source: `stack.sh restore --from <this dir> <name>`
+```
+
+A fan-out branch that needs a source's full instructions reads
+`sources/<name>/SKILL.md` — into ITS context, never the main one.
 
 ## Anti-patterns
 
