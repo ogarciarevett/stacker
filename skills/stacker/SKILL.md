@@ -79,6 +79,20 @@ routing, not stacking — keep the router skill you already have.
 
 Default: **union** for collections, **patch** for documents, **consensus** for facts.
 
+## Common overlap families
+
+Use these to enumerate candidates fast (step 1) — most skill collections grow
+the same overlaps:
+
+| family | typical candidates | default merge |
+|---|---|---|
+| Web access | scraper CLI, local browser, cloud browser, native fetch | patch |
+| UI/UX review | design guidelines, frontend-ui engineering, a11y, web-perf | synthesis |
+| Code review (TS/Rust/Python…) | language reviewer, generic code-quality, security reviewer | union + consensus severity |
+| Test generation | TDD, e2e, regression-testing skills | union |
+| Memory / context recall | session memory, knowledge graph, learned instincts | union, newest wins conflicts |
+| Docs / research | web search, deep-research, vendor-docs lookup | consensus facts, synthesis prose |
+
 ## Worked example — web scraping
 
 Task: extract full product data from a JS-heavy page, feeding a pricing decision

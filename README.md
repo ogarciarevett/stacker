@@ -108,6 +108,23 @@ bash skills/stacker/scripts/stack.sh restore --from ~/.agents/skills/web-access 
 - The stacked skill's SKILL.md must declare its **Routing** table and a
   **Sources** table (where every skill came from) — template in the skill.
 
+## Where stacking pays
+
+Web access is just the worked example — every skill collection grows the same
+overlap families:
+
+| overlap family | the typical pile-up | stack recipe |
+|---|---|---|
+| **Web access** | firecrawl + agent-browser + cloud browser + native fetch | **patch** — clean markdown base, JS-rendered gaps spliced in |
+| **UI/UX review** | design-guidelines + frontend-ui-engineering + a11y + web-perf skills | **synthesis** — one critique, each lens credited |
+| **Code review** (TypeScript, Rust, Python…) | language reviewer + generic code-quality + security reviewer | **union** of findings, **consensus** on severity |
+| **Test generation** | TDD skill + e2e skill + regression-testing skill | **union** — dedupe cases, keep the strongest assertion |
+| **Memory / context** | session memory + knowledge graph + learned-instincts store | **union** — query all, dedupe, newest wins conflicts |
+| **Docs / research** | web search skills + deep-research + vendor-docs lookup | **consensus** for facts, **synthesis** for prose |
+
+Same rule everywhere: the sources fan out in isolated branches, only outputs
+come back, disagreements get reported instead of averaged away.
+
 ## Copy-paste prompts
 
 Stack a one-off, output-critical task:
@@ -126,6 +143,33 @@ My skills firecrawl, firecrawl-scrape, firecrawl-search and agent-browser all
 overlap on web access. Use stacker to make web-access the stacked skill: stash
 the sources with stack.sh so they stop loading but keep updating through
 symlinks, and add the Routing + Sources tables to web-access's SKILL.md.
+```
+
+Stack a UI/UX review:
+
+```text
+Stack a design review of src/app/dashboard: run my UI/UX skills (design
+guidelines, frontend-ui engineering, accessibility, web-perf) as separate
+branches on the same pages, then synthesize one critique that credits which
+lens found what. Flag anything two lenses disagree on.
+```
+
+Stack a code review (works the same for TypeScript, Rust, Python…):
+
+```text
+Stack a review of this PR: run the language reviewer (typescript), the generic
+code-quality skill, and the security reviewer in parallel on the same diff.
+Union the findings, dedupe, mark severity by consensus, and tell me which
+findings only one reviewer caught.
+```
+
+Stack your memory systems before starting work:
+
+```text
+Before we start: stack a recall pass for "payments retry logic" across my
+memory systems (session memory, knowledge graph, learned instincts). Union the
+results, dedupe, prefer the newest fact when they conflict, and flag anything
+single-sourced as unverified.
 ```
 
 Audit or grow an existing stack:
