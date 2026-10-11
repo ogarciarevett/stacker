@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/stacker.svg" width="180" alt="stacker — a stack of pancakes with a terminal-cursor pat of butter">
+<img src=".github/assets/banner.png" alt="stacker: stack your agent skills instead of picking one" width="100%">
 
 # stacker
 
