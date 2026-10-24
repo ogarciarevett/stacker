@@ -1,0 +1,14 @@
+name: PR evidence
+on:
+  pull_request:
+    types: [opened, synchronize, edited, reopened]
+  issue_comment:
+    types: [created, edited, deleted]
+permissions: {}
+jobs:
+  evidence:
+    permissions:
+      pull-requests: read
+      issues: read
+      actions: write
+    uses: ogarciarevett/.github/.github/workflows/evidence.yml@b6e59548f3e18d63d5b953fb4fd3fa86b0782b55
